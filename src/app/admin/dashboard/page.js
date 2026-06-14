@@ -365,18 +365,10 @@ export default function AdminDashboard() {
 
   const handleUpdateStatus = async (id, newStatus) => {
     try {
-      const res = await fetch(`/api/admin/bookings/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (!res.ok) {
-        alert('Failed to update status');
-      }
+      await setDoc(doc(db, 'bookings', id), { status: newStatus }, { merge: true });
     } catch (err) {
       console.error(err);
-      alert('An error occurred');
+      alert('An error occurred while updating status');
     }
   };
 
