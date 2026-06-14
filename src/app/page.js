@@ -1,66 +1,71 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from 'next/link';
+import RulesModal from '@/components/RulesModal';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
+    <div className="home-wrapper">
+      <div className="home-bg-graphics"></div>
+
+      {/* HERO SECTION - 50vh */}
+      <section className="home-hero-section">
+        <div className="home-hero-text">
+          <h1 className="hero-play">JOIN.</h1>
+          <h1 className="hero-compete">BATTLE.</h1>
+          <h1 className="hero-win">WIN BIG.</h1>
           <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+            Join exciting Free Fire tournaments,<br/>
+            compete with the best and win amazing rewards!
           </p>
+          <div className="home-hero-buttons">
+            <Link href="/booking" className="btn-book">
+              🏆 BOOK TOURNAMENT
+            </Link>
+            <Link href="/business-registration" className="btn-book">
+              📄 Business Registration
+            </Link>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* CHARACTER (ABSOLUTE) */}
+      <div className="home-character">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/gc.png" alt="Hero Character" />
+      </div>
+
+      {/* DIAGONAL BANNER - 10vh */}
+      <div className="home-banner-container">
+        <div className="home-banner">
+          <div className="marquee">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <span key={i} className="marquee-item">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/f.png" alt="Free Fire" className="marquee-f-img" />
+                <span className="marquee-heart">❤️</span>
+              </span>
+            ))}
+          </div>
         </div>
-      </main>
+      </div>
+
+      {/* ORGANIZER SECTION */}
+      <section className="home-organizer-section">
+        <div className="organizer-details-wrapper">
+          <div className="organizer-desktop-row">
+            <div className="contact-item contact-phone">
+              <span className="contact-icon">📞</span> 
+              <span className="contact-text">+91 8917398750</span>
+            </div>
+            <div className="contact-item contact-email">
+              <span className="contact-icon">✉️</span> 
+              <span className="contact-text">balaesports@gmail.com</span>
+            </div>
+          </div>
+          <div className="organizer-title">
+            BALA ESPORTS TOURNAMENTS
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
