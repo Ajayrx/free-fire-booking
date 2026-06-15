@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+  <div align="center">
+<div style="text-align: center;">
+  <img src="https://img.shields.io/badge/BALA%20ESPORTS%20%7C%7C%20FF%20TOURNAMENT%20BOOKING%20PLATFORM-ff6200?style=for-the-badge" style="height: 35px;" />
+  <br> <br> 
+</div>
+<!-- <img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/>
+<img src="./public/logo.png" width="50"/> -->
+<img src="./public/f1.jpg" width="500"/>
+<br><br>
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<a href="https://free-fire-booking.vercel.app">
+<img src="https://img.shields.io/badge/FREE FIRE BOOKING WEBSITE LINK-ff6200?style=for-the-badge" style="height: 35px;" />
+</a><br>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<img src="https://img.shields.io/badge/JOIN-ff6200?style=for-the-badge" style="height: 35px;" />
+<img src="https://img.shields.io/badge/BATTLE-ff6200?style=for-the-badge" style="height: 35px;" />
+<img src="https://img.shields.io/badge/WIN BIG-ff6200?style=for-the-badge" style="height: 35px;"  />
+</div>
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+<br>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<!-- <div align="center">
+  <img src="./public/s1.png" width="100%"/><br><br>
+  <img src="./public/s2.png" width="100%"/><br><br>
+  <img src="./public/s2.png" width="100%"/>
+</div> -->
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+<br>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<div align="center">
+  <img src="https://img.shields.io/badge/About%20The%20Project-ff6200?style=for-the-badge" style="height: 35px;"/>
+</div>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<br>
+<div align="center">
 
-## Deploy on Vercel
+<img src="https://img.shields.io/badge/MODERN_PLATFORM-ff6200?style=for-the-badge" style="height: 35px;"/>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<img src="https://img.shields.io/badge/DYNAMIC_PRIZE_POOLS-f59e0b?style=for-the-badge" style="height: 35px;" />
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<img src="https://img.shields.io/badge/REAL_TIME_BOOKING-eab308?style=for-the-badge" style="height: 35px;" />
+
+<img src="https://img.shields.io/badge/KILL_REWARD_SYSTEM-ef4444?style=for-the-badge" style="height: 35px;" />
+
+<img src="https://img.shields.io/badge/FULLY_RESPONSIVE-3b82f6?style=for-the-badge" style="height: 35px;" />
+
+<img src="https://img.shields.io/badge/MATCH_STATUS_TRACKING-22c55e?style=for-the-badge" style="height: 35px;" />
+</div>
+
+
+<br>
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Platform%20Features-FF6A00?style=for-the-badge" style="height: 35px;" />
+</div>
+
+<br>
+<div align="center">
+<img src="https://img.shields.io/badge/TOURNAMENT_SYSTEM-ff6200?style=for-the-badge" style="height:30px;" />
+<img src="https://img.shields.io/badge/48_SLOT_MATCHES-368fff?style=for-the-badge" style="height:30px;" />
+<img src="https://img.shields.io/badge/BOOKING_SYSTEM-368fff?style=for-the-badge" style="height:30px;" />
+<img src="https://img.shields.io/badge/ROOM_DETAILS-368fff?style=for-the-badge" style="height:30px;" />
+<img src="https://img.shields.io/badge/LIVE_STATUS-368fff?style=for-the-badge" style="height:30px;" />
+<img src="https://img.shields.io/badge/PRIZE_POOL-368fff?style=for-the-badge" style="height:30px;" />
+
+<br>
+<div align="center">
+<img src="https://img.shields.io/badge/REWARD_SYSTEM-ff6200?style=for-the-badge" style="height:30px;" />
+<img src="https://img.shields.io/badge/WINNER-368fff?style=for-the-badge" style="height:30px;"/>
+<img src="https://img.shields.io/badge/RUNNER_UP-368fff?style=for-the-badge" style="height:30px;"/>
+<img src="https://img.shields.io/badge/KILL_REWARDS-368fff?style=for-the-badge" style="height:30px;"/>
+<img src="https://img.shields.io/badge/DYNAMIC_POOLS-368fff?style=for-the-badge" style="height:30px;"/>
+<img src="https://img.shields.io/badge/MATCH_TRACKING-368fff?style=for-the-badge" style="height:30px;'\" />
+
+
+<br><br>
+
+<div align="center">
+
+<img src="https://img.shields.io/badge/Screenshots-FF6A00?style=for-the-badge" style="height: 35px;" />
+
+</div>
+
+<br>
+<img src="./public/s1.png" width="800"/>
+<br><br>
+<img src="./public/s2.png" width="800"/>
+<br><br>
+<img src="./public/s3.png" width="800"/>
+
+<br><br>
+
+
+<div align="center">
+
+<img src="https://img.shields.io/badge/Built%20For-Competitive%20Players-FF6A00?style=for-the-badge" style="height: 35px;"/><br>
+<img src="https://img.shields.io/badge/Bala%20Esports%20Tournament%20Platform-FF6A00?style=for-the-badge" style="height: 35px;"/>
+<br>
+<img src="https://img.shields.io/badge/Made with 🤍 by Bala Esports-368fff?style=for-the-badge" style="height: 35px;"/>
+<b></b>
+
+
+</div>
+
