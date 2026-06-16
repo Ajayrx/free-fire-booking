@@ -802,3 +802,37 @@ body {
     line-height: 1.5;
   }
 }
+
+/* Booking Summary Responsive Layout */
+.booking-summary-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.booking-summary-left {
+  flex: 1;
+  padding-right: 24px;
+}
+.booking-summary-right {
+  width: 250px;
+  border-left: 1px solid #eee;
+  padding-left: 24px;
+}
+
+@media (max-width: 600px) {
+  .booking-summary-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .booking-summary-left {
+    padding-right: 0;
+    width: 100%;
+  }
+  .booking-summary-right {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #E5E7EB;
+    padding-left: 0;
+    padding-top: 16px;
+  }
+}

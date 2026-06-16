@@ -42,8 +42,8 @@ export default function BookingSummary({ selectedSlots, setSelectedSlots, active
       borderTop: '4px solid var(--gold-primary)',
       zIndex: 10
     }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, paddingRight: '24px' }}>
+      <div className="booking-summary-container">
+        <div className="booking-summary-left">
           <h3 style={{ margin: '0 0 16px 0' }}>Selected Slots: {selectedSlots.map(s => s.slotNumber).join(', ')}</h3>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '200px', overflowY: 'auto', paddingRight: '8px' }}>
@@ -62,7 +62,7 @@ export default function BookingSummary({ selectedSlots, setSelectedSlots, active
           </div>
         </div>
         
-        <div style={{ width: '250px', borderLeft: '1px solid #eee', paddingLeft: '24px' }}>
+        <div className="booking-summary-right">
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={{ color: 'var(--text-muted)' }}>Price per slot</span>
             <span>₹100</span>
