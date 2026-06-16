@@ -677,8 +677,14 @@ export default function AdminDashboard() {
                         {b.senderUpiId}
                       </td>
                       <td style={{ padding: '16px 8px' }}>
-                        {b.slotNumbers.map((num, i) => (
+                        {(b.slots || []).map((s, i) => (
                           <div key={i} style={{ fontSize: '12px', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px', display: 'inline-block', margin: '2px' }}>
+                            <span style={{ color: '#6B7280', marginRight: '4px' }}>Slot {s.slotNumber}:</span> 
+                            <strong style={{ color: '#111827' }}>{s.freeFireUid || 'UID Added'}</strong>
+                          </div>
+                        ))}
+                        {(!b.slots && b.slotNumbers ? b.slotNumbers : []).map((num, i) => (
+                          <div key={'old-'+i} style={{ fontSize: '12px', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px', display: 'inline-block', margin: '2px' }}>
                             <span style={{ color: '#6B7280', marginRight: '4px' }}>Slot {num}:</span> 
                             <strong style={{ color: '#111827' }}>UID Added</strong>
                           </div>

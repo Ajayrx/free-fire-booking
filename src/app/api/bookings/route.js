@@ -31,7 +31,7 @@ export async function POST(req) {
         slotNumber: s.slotNumber,
         freeFireUid: s.freeFireUid
       })),
-      status: 'PENDING_VERIFICATION',
+      status: 'PENDING',
       createdAt: Date.now()
     });
 
