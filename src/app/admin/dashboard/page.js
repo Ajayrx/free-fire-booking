@@ -146,12 +146,38 @@ function MatchSettingsEditor({ match }) {
     <form onSubmit={handleSave}>
       <h2 style={{ marginBottom: '24px', fontSize: '20px' }}>Match {match.matchNumber} Settings</h2>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-        {/* Swapped order: Prize Pool first */}
-        <div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '16px' }}>
+        
+        {/* 1. Prize Pool & Fees */}
+        <div style={{ background: '#F9FAFB', padding: '16px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+          <h3 style={{ fontSize: '16px', marginBottom: '16px', color: '#059669' }}>Prize Pool & Fees</h3>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '4px' }}>ENTRY FEE (₹)</label>
+              <input 
+                type="number" 
+                value={prizeConfig.entryFee} 
+                onChange={(e) => setPrizeConfig({ ...prizeConfig, entryFee: Number(e.target.value) })}
+                style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
+              />
+            </div>
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '4px' }}>WINNER FIXED PRIZE (₹)</label>
+              <input 
+                type="number" 
+                value={prizeConfig.winnerFixed} 
+                onChange={(e) => setPrizeConfig({ ...prizeConfig, winnerFixed: Number(e.target.value) })}
+                style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Room ID & Pass */}
+        <div style={{ background: '#F9FAFB', padding: '16px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', color: '#2563EB' }}>Room ID & Pass</h3>
-          <div style={{ marginBottom: '12px', display: 'flex', gap: '12px' }}>
-            <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '200px' }}>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '4px' }}>ROOM ID</label>
               <input 
                 type="text" 
@@ -161,7 +187,7 @@ function MatchSettingsEditor({ match }) {
                 style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
               />
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: '200px' }}>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '4px' }}>PASSWORD</label>
               <input 
                 type="text" 
@@ -172,31 +198,12 @@ function MatchSettingsEditor({ match }) {
               />
             </div>
           </div>
-
-          <h3 style={{ fontSize: '16px', marginBottom: '16px', color: '#059669', marginTop: '24px' }}>Prize Pool & Fees</h3>
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '4px' }}>ENTRY FEE (₹)</label>
-            <input 
-              type="number" 
-              value={prizeConfig.entryFee} 
-              onChange={(e) => setPrizeConfig({ ...prizeConfig, entryFee: Number(e.target.value) })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '4px' }}>WINNER FIXED PRIZE (₹)</label>
-            <input 
-              type="number" 
-              value={prizeConfig.winnerFixed} 
-              onChange={(e) => setPrizeConfig({ ...prizeConfig, winnerFixed: Number(e.target.value) })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
         </div>
 
-        <div>
+        {/* 3. Game Configuration */}
+        <div style={{ background: '#F9FAFB', padding: '16px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', color: '#D97706' }}>Game Configuration</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '12px' }}>
             {Object.keys(settings).map((key) => (
               <div key={key} style={{ marginBottom: '4px' }}>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', color: '#4B5563', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/([A-Z])/g, ' $1').trim()}</label>
@@ -274,6 +281,65 @@ function SecuritySettingsEditor() {
         {saving ? 'Updating...' : 'Update Password'}
       </button>
     </form>
+  );
+}
+
+function ClearSlotPanel({ activeMatchId }) {
+  const [slotNum, setSlotNum] = useState('');
+  const [clearing, setClearing] = useState(false);
+
+  const handleClear = async (e) => {
+    e.preventDefault();
+    if (!activeMatchId) return alert('No match selected');
+    if (!slotNum || isNaN(slotNum) || Number(slotNum) < 1 || Number(slotNum) > 48) {
+      return alert('Enter a valid slot number between 1 and 48');
+    }
+
+    if (!confirm(`Are you sure you want to clear Slot ${slotNum} for this match? This will make the slot available for booking again.`)) return;
+
+    setClearing(true);
+    try {
+      const slotRef = doc(db, 'matches', activeMatchId, 'slots', String(slotNum));
+      await updateDoc(slotRef, {
+        status: 'OPEN',
+        bookedBy: null
+      });
+      alert(`Slot ${slotNum} cleared successfully!`);
+      setSlotNum('');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to clear slot. Please try again.');
+    }
+    setClearing(false);
+  };
+
+  return (
+    <>
+      <h2 style={{ marginBottom: '24px', fontSize: '20px' }}>Clear a Booked Slot</h2>
+      
+      <form onSubmit={handleClear} style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', maxWidth: '400px' }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#4B5563', marginBottom: '8px' }}>SLOT NUMBER</label>
+          <input 
+            type="number" 
+            min="1" 
+            max="48" 
+            required 
+            value={slotNum}
+            onChange={(e) => setSlotNum(e.target.value)}
+            placeholder="e.g. 12"
+            style={{ width: '100%', padding: '12px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
+          />
+        </div>
+        <button 
+          type="submit" 
+          disabled={clearing}
+          style={{ padding: '12px 24px', background: '#DC2626', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          {clearing ? 'Clearing...' : 'Clear Slot'}
+        </button>
+      </form>
+    </>
   );
 }
 
@@ -452,29 +518,88 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const renderMobileMatchGroup = (matchList, label, dateTime) => {
+    const d = new Date(dateTime || Date.now());
+    const day = d.toLocaleDateString('en-US', { weekday: 'short' });
+    const date = d.getDate();
+    const month = d.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
+    const year = d.getFullYear();
+    let prefix = '';
+    if (label === 'TODAY') prefix = 'today ';
+    if (label === 'TOMORROW') prefix = 'tomorrow ';
+    const finalDateStr = `${prefix}${day} ${date} ${month} ${year}`;
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827' }}>
+          {finalDateStr}
+        </div>
+        <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+          {matchList.map((match) => (
+            <button
+              key={match.id}
+              onClick={() => setActiveMatchId(match.id)}
+              style={{
+                flex: 1,
+                padding: '12px 8px',
+                borderRadius: '6px',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'center',
+                background: activeMatchId === match.id ? '#1F2937' : '#E5E7EB',
+                color: activeMatchId === match.id ? 'white' : '#4B5563',
+              }}
+            >
+              match {match.matchNumber} {match.status.toLowerCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="app-container" style={{ display: 'block', padding: '32px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h1 className="title">Admin Dashboard</h1>
-        <button 
-          onClick={toggleSuspension}
-          style={{
-            padding: '12px 24px',
-            background: isSuspended ? '#059669' : '#DC2626',
-            color: 'white',
-            fontWeight: 'bold',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            textTransform: 'uppercase'
-          }}
-        >
-          {isSuspended ? 'RESUME ALL TOURNAMENTS' : 'SUSPEND ALL TOURNAMENTS'}
-        </button>
+      <div className="admin-header-flex">
+        <h1 className="title" style={{ margin: 0, textTransform: 'uppercase', color: '#0891B2' }}>ADMIN DASHBOARD</h1>
+        <div className="admin-header-buttons">
+          <button 
+            onClick={toggleSuspension}
+            style={{
+              padding: '12px 24px',
+              background: isSuspended ? '#059669' : '#DC2626',
+              color: 'white',
+              fontWeight: 'bold',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '14px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              textTransform: 'uppercase',
+              flex: 1,
+              width: '100%'
+            }}
+          >
+            {isSuspended ? 'RESUME ALL TOURNAMENTS' : 'SUSPEND ALL TOURNAMENTS'}
+          </button>
+          <button 
+            onClick={() => setActiveTab('payment')}
+            style={{ flex: 1, width: '100%', padding: '12px 24px', fontWeight: 'bold', fontSize: '14px', background: activeTab === 'payment' ? '#D97706' : '#E5E7EB', color: activeTab === 'payment' ? 'white' : '#4B5563', border: 'none', borderRadius: '8px', cursor: 'pointer', textTransform: 'uppercase' }}
+          >
+            Payment Settings
+          </button>
+          <button 
+            onClick={() => setActiveTab('security')}
+            style={{ flex: 1, width: '100%', padding: '12px 24px', fontWeight: 'bold', fontSize: '14px', background: activeTab === 'security' ? '#D97706' : '#E5E7EB', color: activeTab === 'security' ? 'white' : '#4B5563', border: 'none', borderRadius: '8px', cursor: 'pointer', textTransform: 'uppercase' }}
+          >
+            Security
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', alignItems: 'center' }}>
+      <div className="desktop-match-selector" style={{ gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', alignItems: 'center' }}>
         {todaysMatches.length > 0 && (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -507,7 +632,13 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+      <div className="mobile-match-selector" style={{ flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+        {todaysMatches.length > 0 && renderMobileMatchGroup(todaysMatches, 'TODAY', todayTime)}
+        {tomorrowsMatches.length > 0 && renderMobileMatchGroup(tomorrowsMatches, 'TOMORROW', tomorrowTime)}
+        {otherMatches.length > 0 && renderMobileMatchGroup(otherMatches, 'FUTURE', otherMatches[0].date)}
+      </div>
+
+      <div className="admin-tab-buttons" style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
         <button 
           onClick={() => setActiveTab('bookings')}
           style={{ padding: '10px 20px', fontWeight: 'bold', background: activeTab === 'bookings' ? '#D97706' : '#E5E7EB', color: activeTab === 'bookings' ? 'white' : '#4B5563', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
@@ -521,16 +652,10 @@ export default function AdminDashboard() {
           Match Settings
         </button>
         <button 
-          onClick={() => setActiveTab('payment')}
-          style={{ padding: '10px 20px', fontWeight: 'bold', background: activeTab === 'payment' ? '#D97706' : '#E5E7EB', color: activeTab === 'payment' ? 'white' : '#4B5563', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          onClick={() => setActiveTab('clear_slots')}
+          style={{ padding: '10px 20px', fontWeight: 'bold', background: activeTab === 'clear_slots' ? '#D97706' : '#E5E7EB', color: activeTab === 'clear_slots' ? 'white' : '#4B5563', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
-          Payment Settings
-        </button>
-        <button 
-          onClick={() => setActiveTab('security')}
-          style={{ padding: '10px 20px', fontWeight: 'bold', background: activeTab === 'security' ? '#DC2626' : '#E5E7EB', color: activeTab === 'security' ? 'white' : '#4B5563', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Security
+          Clear Slot
         </button>
       </div>
 
@@ -610,6 +735,8 @@ export default function AdminDashboard() {
           <MatchSettingsEditor match={activeMatchObj} />
         ) : activeTab === 'security' ? (
           <SecuritySettingsEditor />
+        ) : activeTab === 'clear_slots' ? (
+          <ClearSlotPanel activeMatchId={activeMatchId} />
         ) : (
           <PaymentSettingsEditor />
         )}

@@ -146,6 +146,74 @@ export default function LobbyPage() {
     </div>
   );
 
+  const handleMobileMatchSelect = (match) => {
+    setActiveMatch(match);
+    setTimeout(() => {
+      document.getElementById('slot-selection-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const renderMobileGroup = (matchList, label, dateObj, theme) => {
+    return (
+      <div className={`match-group-card ${theme}`}>
+        <div className="match-group-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: theme === 'today' ? '#10B981' : '#F59E0B' }}>
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span className={`title ${theme}`}>{label}</span>
+          <span style={{ color: '#D1D5DB' }}>|</span>
+          <span className="date">{dateObj.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span>
+        </div>
+        <div>
+          {matchList.map(match => {
+            const isSelected = activeMatch?.id === match.id;
+            const canSelect = match.status === 'OPEN' || match.status === 'FULL';
+            const isLocked = !canSelect;
+            
+            return (
+              <div 
+                key={match.id} 
+                className={`match-item-row ${isSelected ? 'selected' : ''}`}
+                onClick={() => canSelect && handleMobileMatchSelect(match)}
+                style={{ opacity: isLocked ? 0.7 : 1 }}
+              >
+                <div className={`hexagon-badge ${isLocked ? 'locked' : theme}`}>
+                  {match.matchNumber}
+                </div>
+                <div className="match-info">
+                  <div className="match-info-title">MATCH {match.matchNumber}</div>
+                  <div className={`match-status ${isLocked ? 'locked' : `open ${theme}`}`}>
+                    {isLocked ? (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    ) : (
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: theme === 'today' ? '#10B981' : '#F59E0B' }}></div>
+                    )}
+                    {match.status}
+                  </div>
+                </div>
+                <div className="match-action">
+                  {isLocked ? (
+                    <button className="locked-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </button>
+                  ) : (
+                    <button className={`play-now-btn ${theme}`}>PLAY NOW &gt;</button>
+                  )}
+                  <div className="slots-left">
+                    {isLocked ? '--' : (48 - slots.filter(s => s.status === 'BOOKED').length)} Slots Left
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="app-container" style={{ position: 'relative' }}>
       
@@ -177,8 +245,8 @@ export default function LobbyPage() {
       {/* Right Content Area */}
       <div className="main-content" style={{ display: 'flex', flexDirection: 'column' }}>
         
-        {/* Match Selector */}
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', alignItems: 'center' }}>
+        {/* Desktop Match Selector */}
+        <div className="desktop-match-selector" style={{ gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ fontWeight: 'bold', color: '#111827', fontSize: '14px', whiteSpace: 'nowrap' }}>TODAY</span>
             <span style={{ fontSize: '12px', color: '#6B7280' }}>{today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
@@ -197,7 +265,13 @@ export default function LobbyPage() {
           )}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        {/* Mobile Match Selector */}
+        <div className="mobile-match-selector">
+          {todaysMatches.length > 0 && renderMobileGroup(todaysMatches, 'TODAY', today, 'today')}
+          {tomorrowsMatches.length > 0 && renderMobileGroup(tomorrowsMatches, 'TOMORROW', new Date(today.getTime() + 86400000), 'tomorrow')}
+        </div>
+
+        <div id="slot-selection-area" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingTop: '16px' }}>
           <h2 className="title" style={{ margin: 0 }}>Select Your Slot (Match {activeMatch?.matchNumber})</h2>
           <div style={{ fontWeight: '600', color: 'var(--text-muted)' }}>
             Live Counter: {slots.filter(s => s.status === 'BOOKED').length}/48 Players Joined

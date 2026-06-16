@@ -8,12 +8,22 @@ import { doc, getDoc } from 'firebase/firestore';
 // Helper to convert Google Drive link to direct image link
 function getDirectImageUrl(url) {
   if (!url) return '';
-  const gdriveRegex = /drive\.google\.com\/file\/d\/([^\/?]+)/;
-  const match = url.match(gdriveRegex);
-  if (match && match[1]) {
-    // Using thumbnail endpoint which is more reliable for Google Drive hotlinking
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+  
+  // Try extracting ID from /file/d/ID/
+  const fileDRegex = /drive\.google\.com\/file\/d\/([^\/?]+)/;
+  let match = url.match(fileDRegex);
+  
+  // Try extracting ID from ?id=ID
+  if (!match) {
+    const idRegex = /[?&]id=([^&]+)/;
+    match = url.match(idRegex);
   }
+
+  if (match && match[1]) {
+    // The uc endpoint is the standard way to embed public Google Drive images
+    return `https://drive.google.com/uc?id=${match[1]}`;
+  }
+  
   return url; // Return as-is if it's already a direct link
 }
 
@@ -152,10 +162,15 @@ export default function PaymentPage() {
 
   return (
     <div className="app-container" style={{ justifyContent: 'center', alignItems: 'flex-start', padding: '32px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', maxWidth: '1200px', width: '100%', margin: '0 auto', alignItems: 'stretch' }}>
+      <div className="payment-grid">
         
         {/* COLUMN 1: Player Details Form */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
+          <div className="mobile-payment-notice">
+            <svg style={{ display: 'inline', width: '16px', height: '16px', marginRight: '6px', verticalAlign: 'text-bottom' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <strong>Note:</strong> QR Code and Bank details are available below. Please complete your payment there first.
+          </div>
+          
           <h1 className="title" style={{ fontSize: '20px', marginBottom: '4px' }}>Complete Your Booking</h1>
           <p className="subtitle" style={{ marginBottom: '16px', fontSize: '13px' }}>Enter your details and complete the payment to secure your slots.</p>
 

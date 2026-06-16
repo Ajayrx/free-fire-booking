@@ -309,6 +309,184 @@ body {
   max-width: 400px;
 }
 
+.admin-header-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 24px;
+}
+
+.admin-header-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.admin-tab-buttons {
+  flex-direction: row;
+}
+.admin-tab-buttons button {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .admin-header-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .admin-tab-buttons {
+    flex-direction: column !important;
+  }
+  .admin-tab-buttons button {
+    width: 100%;
+  }
+}
+
+/* Responsive Match Selectors */
+.desktop-match-selector {
+  display: flex;
+}
+.mobile-match-selector {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-match-selector {
+    display: none !important;
+  }
+  .mobile-match-selector {
+    display: flex !important;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+/* White Theme Cards for Mobile Match Selector */
+.match-group-card {
+  border-radius: 12px;
+  padding: 0;
+  background: white;
+  overflow: hidden;
+}
+.match-group-card.today {
+  border: 1px solid #10B981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
+.match-group-card.tomorrow {
+  border: 1px solid #F59E0B;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.match-group-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 8px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #F9FAFB;
+}
+.match-group-header .title.today {
+  color: #10B981;
+  font-weight: 800;
+}
+.match-group-header .title.tomorrow {
+  color: #F59E0B;
+  font-weight: 800;
+}
+.match-group-header .date {
+  color: #4B5563;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.match-item-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #F3F4F6;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.match-item-row:last-child {
+  border-bottom: none;
+}
+.match-item-row:hover {
+  background: #F9FAFB;
+}
+.match-item-row.selected {
+  background: #F3F4F6;
+}
+
+.hexagon-badge {
+  width: 40px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  color: white;
+}
+.hexagon-badge.today { background: #10B981; }
+.hexagon-badge.tomorrow { background: #F59E0B; }
+.hexagon-badge.locked { background: #6B7280; }
+
+.match-info {
+  flex: 1;
+}
+.match-info-title {
+  font-weight: bold;
+  color: #111827;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+.match-status {
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.match-status.open.today { color: #10B981; }
+.match-status.open.tomorrow { color: #F59E0B; }
+.match-status.locked { color: #6B7280; }
+
+.match-action {
+  text-align: right;
+}
+.play-now-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+.play-now-btn.today { background: linear-gradient(90deg, #10B981, #059669); }
+.play-now-btn.tomorrow { background: linear-gradient(90deg, #F59E0B, #D97706); }
+.locked-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  color: #6B7280;
+  border: 1px solid #D1D5DB;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.slots-left {
+  font-size: 11px;
+  color: #9CA3AF;
+  margin-top: 4px;
+}
+
 .home-hero-buttons {
   display: flex;
   flex-direction: column;
@@ -589,5 +767,38 @@ body {
     width: calc(100vw + 192px); /* 192px = 2 inches. Automatically increases height proportionally */
     max-width: none;
     transform: translateY(calc(0.7mm + 1in));
+  }
+}
+
+/* Payment Page Responsive Grid */
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.mobile-payment-notice {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+  .mobile-payment-notice {
+    display: block;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-left: 4px solid #F59E0B;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    color: #92400E;
+    font-size: 13px;
+    line-height: 1.5;
   }
 }
