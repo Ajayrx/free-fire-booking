@@ -620,22 +620,11 @@ export default function AdminDashboard() {
             {renderMatchButtons(tomorrowsMatches)}
           </>
         )}
-
-        {otherMatches.length > 0 && (
-          <>
-            {(todaysMatches.length > 0 || tomorrowsMatches.length > 0) && <div style={{ width: '1px', height: '24px', background: '#D1D5DB', margin: '0 8px' }}></div>}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontWeight: 'bold', color: '#111827', fontSize: '14px', whiteSpace: 'nowrap' }}>FUTURE</span>
-            </div>
-            {renderMatchButtons(otherMatches)}
-          </>
-        )}
       </div>
 
       <div className="mobile-match-selector" style={{ flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
         {todaysMatches.length > 0 && renderMobileMatchGroup(todaysMatches, 'TODAY', todayTime)}
         {tomorrowsMatches.length > 0 && renderMobileMatchGroup(tomorrowsMatches, 'TOMORROW', tomorrowTime)}
-        {otherMatches.length > 0 && renderMobileMatchGroup(otherMatches, 'FUTURE', otherMatches[0].date)}
       </div>
 
       <div className="admin-tab-buttons" style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
