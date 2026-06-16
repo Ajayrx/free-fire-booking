@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, doc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 
 export async function POST(req) {
   try {
@@ -15,13 +15,22 @@ export async function POST(req) {
     for (const slot of slots) {
       const slotRef = doc(db, 'matches', matchId, 'slots', slot.id.toString());
       const slotSnap = await getDoc(slotRef);
-      if (!slotSnap.exists() || slotSnap.data().status !== 'AVAILABLE') {
+      const slotData = slotSnap.data();
+      if (!slotSnap.exists() || (slotData.status !== 'AVAILABLE' && slotData.status !== 'OPEN')) {
         return NextResponse.json({ error: `Slot ${slot.slotNumber} is no longer available.` }, { status: 400 });
       }
     }
 
+    // Generate custom booking ID: p2065 + 19 random numbers
+    let random19 = '';
+    for (let i = 0; i < 19; i++) {
+      random19 += Math.floor(Math.random() * 10);
+    }
+    const customBookingId = `p2065${random19}`;
+
     // Create the booking document
-    const bookingRef = await addDoc(collection(db, 'bookings'), {
+    const bookingRef = doc(collection(db, 'bookings'), customBookingId);
+    await setDoc(bookingRef, {
       playerName,
       whatsappNumber,
       senderUpiId,
@@ -40,9 +49,9 @@ export async function POST(req) {
     for (const slot of slots) {
       const slotRef = doc(db, 'matches', matchId, 'slots', slot.id.toString());
       batch.update(slotRef, {
-        status: 'BOOKED',
+        status: 'PENDING',
         freeFireUid: slot.freeFireUid,
-        bookingId: bookingRef.id,
+        bookingId: customBookingId,
         playerName,
         whatsappNumber
       });
@@ -52,7 +61,7 @@ export async function POST(req) {
 
     return NextResponse.json({ 
       success: true, 
-      booking: { id: bookingRef.id } 
+      booking: { id: customBookingId } 
     }, { status: 200 });
 
   } catch (error) {

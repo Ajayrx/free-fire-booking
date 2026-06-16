@@ -1,5 +1,5 @@
 export default function SlotCard({ slot, isSelected, onToggle }) {
-  const isAvailable = slot.status === 'AVAILABLE';
+  const isAvailable = slot.status === 'AVAILABLE' || slot.status === 'OPEN';
   const isPending = slot.status === 'PENDING';
   const isBooked = slot.status === 'BOOKED';
 

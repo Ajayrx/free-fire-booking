@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, getDoc, where } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, getDoc, where, writeBatch } from 'firebase/firestore';
 
 function PaymentSettingsEditor() {
   const [settings, setSettings] = useState({
@@ -301,8 +301,12 @@ function ClearSlotPanel({ activeMatchId }) {
     try {
       const slotRef = doc(db, 'matches', activeMatchId, 'slots', String(slotNum));
       await updateDoc(slotRef, {
-        status: 'OPEN',
-        bookedBy: null
+        status: 'AVAILABLE',
+        bookedBy: null,
+        bookingId: null,
+        freeFireUid: null,
+        playerName: null,
+        whatsappNumber: null
       });
       alert(`Slot ${slotNum} cleared successfully!`);
       setSlotNum('');
@@ -429,9 +433,28 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, [isAuthenticated]);
 
-  const handleUpdateStatus = async (id, newStatus) => {
+  const handleUpdateStatus = async (booking, newStatus) => {
     try {
-      await setDoc(doc(db, 'bookings', id), { status: newStatus }, { merge: true });
+      await setDoc(doc(db, 'bookings', booking.id), { status: newStatus }, { merge: true });
+      
+      if (booking.slots && booking.matchId) {
+        const batch = writeBatch(db);
+        for (const slot of booking.slots) {
+          const slotRef = doc(db, 'matches', booking.matchId, 'slots', slot.slotId.toString());
+          if (newStatus === 'APPROVED') {
+            batch.update(slotRef, { status: 'BOOKED' });
+          } else if (newStatus === 'REJECTED') {
+            batch.update(slotRef, { 
+              status: 'AVAILABLE', 
+              bookingId: null, 
+              freeFireUid: null, 
+              playerName: null, 
+              whatsappNumber: null 
+            });
+          }
+        }
+        await batch.commit();
+      }
     } catch (err) {
       console.error(err);
       alert('An error occurred while updating status');
@@ -703,16 +726,16 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td style={{ padding: '16px 8px' }}>
-                        {b.status === 'PENDING' && (
+                        {(b.status === 'PENDING' || b.status === 'PENDING_VERIFICATION') && (
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <button 
-                              onClick={() => handleUpdateStatus(b.id, 'APPROVED')}
+                              onClick={() => handleUpdateStatus(b, 'APPROVED')}
                               style={{ background: '#059669', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
                             >
                               Approve
                             </button>
                             <button 
-                              onClick={() => handleUpdateStatus(b.id, 'REJECTED')}
+                              onClick={() => handleUpdateStatus(b, 'REJECTED')}
                               style={{ background: '#DC2626', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
                             >
                               Reject

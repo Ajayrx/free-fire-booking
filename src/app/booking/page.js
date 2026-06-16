@@ -11,6 +11,7 @@ export default function LobbyPage() {
   const [matches, setMatches] = useState([]);
   const [activeMatch, setActiveMatch] = useState(null);
   const [slots, setSlots] = useState([]);
+  const [slotsCount, setSlotsCount] = useState({});
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSuspended, setIsSuspended] = useState(false);
@@ -21,9 +22,24 @@ export default function LobbyPage() {
       if (loading) {
         alert("Network Error: The app is unable to connect to the Firebase database. Please check if your phone has actual Internet access through the Windows Mobile Hotspot (it may only have local network access).");
       }
-    }, 8000);
+    }, 5000);
     return () => clearTimeout(timeout);
   }, [loading]);
+
+  // Track slot counts for all loaded matches
+  useEffect(() => {
+    const unsubscribes = matches.map(match => {
+      const slotsRef = collection(db, 'matches', match.id, 'slots');
+      return onSnapshot(slotsRef, (snapshot) => {
+        const taken = snapshot.docs.filter(doc => 
+          doc.data().status === 'BOOKED' || doc.data().status === 'PENDING'
+        ).length;
+        setSlotsCount(prev => ({ ...prev, [match.id]: 48 - taken }));
+      });
+    });
+
+    return () => unsubscribes.forEach(unsub => unsub());
+  }, [matches]);
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'global_settings', 'status'), (docSnap) => {
@@ -96,7 +112,7 @@ export default function LobbyPage() {
   }, [activeMatchId]);
 
   const handleSlotClick = (slot) => {
-    if (slot.status !== 'AVAILABLE') return;
+    if (slot.status !== 'AVAILABLE' && slot.status !== 'OPEN') return;
     
     if (selectedSlots.find(s => s.id === slot.id)) {
       setSelectedSlots(selectedSlots.filter(s => s.id !== slot.id));
@@ -206,7 +222,7 @@ export default function LobbyPage() {
                     <button className={`play-now-btn ${theme}`}>PLAY NOW &gt;</button>
                   )}
                   <div className="slots-left">
-                    {isLocked ? '--' : (48 - slots.filter(s => s.status === 'BOOKED').length)} Slots Left
+                    {isLocked ? '--' : (slotsCount[match.id] !== undefined ? slotsCount[match.id] : '--')} Slots Left
                   </div>
                 </div>
               </div>

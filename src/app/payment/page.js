@@ -150,7 +150,7 @@ export default function PaymentPage() {
             <p style={{ color: '#92400E', fontSize: '12px', margin: 0 }}><strong>Email:</strong> {paymentSettings.email || 'ajay0i0know@gmail.com'}</p>
           </div>
 
-          <button className="btn-primary" onClick={() => router.push('/')} style={{ width: '100%', padding: '14px' }}>
+          <button className="btn-primary" onClick={() => router.push('/booking#slot-selection-area')} style={{ width: '100%', padding: '14px' }}>
             BACK TO LOBBY
           </button>
         </div>
