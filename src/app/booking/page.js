@@ -116,8 +116,11 @@ export default function LobbyPage() {
   // Separate matches by date
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   const todaysMatches = matches.filter(m => m.date === today.getTime());
-  const tomorrowsMatches = matches.filter(m => m.date > today.getTime());
+  const tomorrowsMatches = matches.filter(m => m.date === tomorrow.getTime());
 
   const renderMatchButtons = (matchList) => (
     <div style={{ display: 'flex', gap: '8px' }}>
