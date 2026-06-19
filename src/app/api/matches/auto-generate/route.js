@@ -2,11 +2,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, setDoc, writeBatch } from 'firebase/firestore';
 
-async function generateMatchesForDate(targetDate) {
-  // targetDate is a Date object set to 00:00:00
-  const timestamp = targetDate.getTime();
-  
-  const q = query(collection(db, 'matches'), where('date', '==', timestamp));
+async function generateMatchesForDate(targetDateStr) {
+  const q = query(collection(db, 'matches'), where('dateStr', '==', targetDateStr));
   const snap = await getDocs(q);
   
   if (!snap.empty) {
@@ -18,7 +15,7 @@ async function generateMatchesForDate(targetDate) {
     const matchRef = doc(collection(db, 'matches'));
     await setDoc(matchRef, {
       matchNumber: i,
-      date: timestamp,
+      dateStr: targetDateStr,
       status: i === 1 ? 'OPEN' : 'LOCKED', // Only match 1 is open
       createdAt: Date.now(),
       settings: {
@@ -71,15 +68,22 @@ async function generateMatchesForDate(targetDate) {
 
 export async function POST() {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const getISTDateString = (offsetDays = 0) => {
+      const date = new Date();
+      const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+      const istDate = new Date(utc + (330 * 60000));
+      istDate.setDate(istDate.getDate() + offsetDays);
+      const yyyy = istDate.getFullYear();
+      const mm = String(istDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(istDate.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
 
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+    const todayStr = getISTDateString(0);
+    const tomorrowStr = getISTDateString(1);
 
-    const generatedToday = await generateMatchesForDate(today);
-    const generatedTomorrow = await generateMatchesForDate(tomorrow);
+    const generatedToday = await generateMatchesForDate(todayStr);
+    const generatedTomorrow = await generateMatchesForDate(tomorrowStr);
 
     return NextResponse.json({ 
       message: 'Match auto-generation complete',

@@ -129,14 +129,29 @@ export default function LobbyPage() {
     return <div style={{ padding: '40px', textAlign: 'center' }}>Loading Lobby...</div>;
   }
 
-  // Separate matches by date
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  // Robust Timezone Fix: Calculate Date in IST (UTC+5:30)
+  const getISTDateString = (offsetDays = 0) => {
+    const date = new Date();
+    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+    const istDate = new Date(utc + (330 * 60000));
+    istDate.setDate(istDate.getDate() + offsetDays);
+    const yyyy = istDate.getFullYear();
+    const mm = String(istDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(istDate.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
-  const todaysMatches = matches.filter(m => m.date === today.getTime());
-  const tomorrowsMatches = matches.filter(m => m.date === tomorrow.getTime());
+  const todayStr = getISTDateString(0);
+  const tomorrowStr = getISTDateString(1);
+
+  // Fallback for legacy timestamps generated locally
+  const legacyToday = new Date();
+  legacyToday.setHours(0, 0, 0, 0);
+  const legacyTomorrow = new Date(legacyToday);
+  legacyTomorrow.setDate(legacyTomorrow.getDate() + 1);
+
+  const todaysMatches = matches.filter(m => m.dateStr === todayStr || m.date === legacyToday.getTime());
+  const tomorrowsMatches = matches.filter(m => m.dateStr === tomorrowStr || m.date === legacyTomorrow.getTime());
 
   const renderMatchButtons = (matchList) => (
     <div style={{ display: 'flex', gap: '8px' }}>
@@ -235,12 +250,12 @@ export default function LobbyPage() {
 
   return (
     <div className="app-container" style={{ position: 'relative' }}>
-      
-      {isSuspended && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: 'transparent',
+        
+        {isSuspended && (
+          <div style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'transparent',
           zIndex: 40,
           display: 'flex',
           alignItems: 'center',
@@ -268,7 +283,7 @@ export default function LobbyPage() {
         <div className="desktop-match-selector" style={{ gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ fontWeight: 'bold', color: '#111827', fontSize: '14px', whiteSpace: 'nowrap' }}>TODAY</span>
-            <span style={{ fontSize: '12px', color: '#6B7280' }}>{today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            <span style={{ fontSize: '12px', color: '#6B7280' }}>{legacyToday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
           </div>
           {renderMatchButtons(todaysMatches)}
           
@@ -277,17 +292,17 @@ export default function LobbyPage() {
               <div style={{ width: '1px', height: '24px', background: '#D1D5DB', margin: '0 8px' }}></div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ fontWeight: 'bold', color: '#111827', fontSize: '14px', whiteSpace: 'nowrap' }}>TOMORROW</span>
-                <span style={{ fontSize: '12px', color: '#6B7280' }}>{new Date(today.getTime() + 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                <span style={{ fontSize: '12px', color: '#6B7280' }}>{legacyTomorrow.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
               </div>
               {renderMatchButtons(tomorrowsMatches)}
             </>
           )}
         </div>
 
-        {/* Mobile Match Selector */}
-        <div className="mobile-match-selector">
-          {todaysMatches.length > 0 && renderMobileGroup(todaysMatches, 'TODAY', today, 'today')}
-          {tomorrowsMatches.length > 0 && renderMobileGroup(tomorrowsMatches, 'TOMORROW', new Date(today.getTime() + 86400000), 'tomorrow')}
+        {/* MOBILE VIEW */}
+        <div className="mobile-match-selector" style={{ padding: '0 16px' }}>
+          {todaysMatches.length > 0 && renderMobileGroup(todaysMatches, 'TODAY', legacyToday, 'today')}
+          {tomorrowsMatches.length > 0 && renderMobileGroup(tomorrowsMatches, 'TOMORROW', legacyTomorrow, 'tomorrow')}
         </div>
 
         <div id="slot-selection-area" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingTop: '16px' }}>

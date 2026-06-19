@@ -1,0 +1,226 @@
+.sn-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sn-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.sn-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.sn-logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: -0.05em;
+  display: flex;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.sn-logo .text-white { color: white; }
+.sn-logo .text-gradient { 
+  background: linear-gradient(to right, #f97316, #eab308); 
+  -webkit-background-clip: text; 
+  color: transparent; 
+}
+
+.sn-desktop-menu {
+  display: none;
+}
+@media (min-width: 768px) {
+  .sn-desktop-menu {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+  }
+}
+
+.sn-nav-links {
+  margin-left: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sn-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #d1d5db;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+.sn-nav-link:hover { color: white; }
+
+.sn-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.sn-login-btn:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+.sn-mobile-btn-container {
+  display: block;
+}
+@media (min-width: 768px) {
+  .sn-mobile-btn-container { display: none; }
+}
+
+.sn-mobile-btn {
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.sn-mobile-btn:hover { color: #ff5722; }
+
+/* Floating Hamburger */
+.sn-floating-hamburger {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 50;
+}
+.sn-floating-btn {
+  width: 56px;
+  height: 56px;
+  background-color: #ff5722;
+  color: black;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+
+/* Modal */
+.sn-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+}
+
+.sn-modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  width: 90%;
+  max-width: 400px;
+}
+
+.sn-modal-content {
+  position: relative;
+  background-color: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.sn-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 8px;
+  color: #9ca3af;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.sn-close-btn:hover { color: white; background-color: rgba(255, 255, 255, 0.1); }
+
+.sn-menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.sn-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  transition: background-color 0.2s;
+  text-decoration: none;
+}
+.sn-menu-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+.sn-menu-icon { color: #ff5722; display: flex; align-items: center; justify-content: center; }
+.sn-menu-text { font-size: 18px; font-weight: 500; color: #e5e7eb; }
+.sn-menu-item:hover .sn-menu-text { color: white; }
+
+.sn-mobile-login {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.sn-mobile-login:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+.sn-deco-1 {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  background-color: #ff5722;
+  border-radius: 50%;
+}
+.sn-deco-2 {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 12px;
+  height: 12px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+}
