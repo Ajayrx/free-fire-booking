@@ -455,6 +455,18 @@ export default function AdminDashboard() {
 
   const handleUpdateStatus = async (booking, newStatus) => {
     try {
+      if (newStatus === 'APPROVED' && booking.slots && booking.matchId) {
+        // Check if any slot is already BOOKED by a different booking
+        for (const slot of booking.slots) {
+          const slotRef = doc(db, 'matches', booking.matchId, 'slots', slot.slotId.toString());
+          const slotSnap = await getDoc(slotRef);
+          if (slotSnap.exists() && slotSnap.data().status === 'BOOKED' && slotSnap.data().bookingId !== booking.id) {
+            alert(`Cannot approve: Slot ${slot.slotNumber} is already APPROVED for another player!`);
+            return;
+          }
+        }
+      }
+
       await setDoc(doc(db, 'bookings', booking.id), { status: newStatus }, { merge: true });
       
       if (booking.slots && booking.matchId) {
@@ -462,7 +474,7 @@ export default function AdminDashboard() {
         for (const slot of booking.slots) {
           const slotRef = doc(db, 'matches', booking.matchId, 'slots', slot.slotId.toString());
           if (newStatus === 'APPROVED') {
-            batch.update(slotRef, { status: 'BOOKED' });
+            batch.update(slotRef, { status: 'BOOKED', bookingId: booking.id });
           } else if (newStatus === 'REJECTED') {
             batch.update(slotRef, { 
               status: 'AVAILABLE', 
