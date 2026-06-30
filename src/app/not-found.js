@@ -28,7 +28,7 @@ export default function NotFound() {
         fontSize: '25vw',
         fontWeight: '900',
         color: 'rgba(255, 106, 0, 0.05)', /* Slightly visible orange on white */
-        fontFamily: "'Anton', sans-serif",
+        fontFamily: "var(--font-anton), 'Anton', sans-serif",
         whiteSpace: 'nowrap',
         pointerEvents: 'none',
         zIndex: 0
@@ -39,7 +39,7 @@ export default function NotFound() {
       <div style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={{
           fontSize: '5rem',
-          fontFamily: "'Anton', sans-serif",
+          fontFamily: "var(--font-anton), 'Anton', sans-serif",
           color: '#ff6a00',
           margin: '0 0 10px 0',
           textShadow: '0 4px 15px rgba(255, 106, 0, 0.2)', /* Soft shadow for white bg */
@@ -74,7 +74,7 @@ export default function NotFound() {
           color: 'white',
           padding: '16px 32px',
           borderRadius: '8px',
-          fontFamily: "'Anton', sans-serif",
+          fontFamily: "var(--font-anton), 'Anton', sans-serif",
           fontSize: '1.2rem',
           letterSpacing: '1px',
           textDecoration: 'none',
