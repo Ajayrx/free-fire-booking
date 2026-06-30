@@ -67,7 +67,7 @@ export default function Navigation() {
         initial="visible"
         animate={showFloatingHamburger ? "hidden" : "visible"}
         transition={{ duration: 0.3 }}
-        style={{ display: 'flex', justifyContent: 'center', padding: '16px 16px 0 16px', position: 'sticky', top: 0, zIndex: 40 }}
+        style={{ display: 'flex', justifyContent: 'center', padding: '16px 16px 0 16px', position: 'sticky', top: 0, zIndex: 1000 }}
       >
         <nav className="nav-bar">
           <div className="nav-brand">

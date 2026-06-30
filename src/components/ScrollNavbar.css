@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: 1000;
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -109,7 +109,7 @@
   position: fixed;
   top: 24px;
   right: 24px;
-  z-index: 50;
+  z-index: 1000;
 }
 .sn-floating-btn {
   width: 56px;
@@ -131,7 +131,7 @@
   inset: 0;
   background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(4px);
-  z-index: 40;
+  z-index: 999;
 }
 
 .sn-modal-container {
@@ -139,7 +139,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 50;
+  z-index: 1001;
   width: 90%;
   max-width: 400px;
 }

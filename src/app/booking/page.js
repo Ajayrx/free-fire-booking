@@ -265,12 +265,12 @@ export default function LobbyPage() {
             position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
             background: 'transparent',
-          zIndex: 40,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'all',
-          overflow: 'hidden'
+            zIndex: 30,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'all',
+            overflow: 'hidden'
         }}>
           <img 
             src="/suspend-banner.png" 
