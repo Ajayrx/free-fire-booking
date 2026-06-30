@@ -440,18 +440,23 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, [isAuthenticated]);
 
-  // 2. Fetch Bookings
+  // 2. Fetch Bookings for Active Match Only
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !activeMatchId) return;
 
-    const q = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'bookings'), where('matchId', '==', activeMatchId));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedBookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      fetchedBookings.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis?.() || a.createdAt || 0;
+        const timeB = b.createdAt?.toMillis?.() || b.createdAt || 0;
+        return timeB - timeA;
+      });
       setBookings(fetchedBookings);
     });
 
     return () => unsubscribe();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, activeMatchId]);
 
   const handleUpdateStatus = async (booking, newStatus) => {
     try {

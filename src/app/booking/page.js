@@ -58,20 +58,6 @@ export default function LobbyPage() {
     return () => clearTimeout(timeout);
   }, [loading]);
 
-  // Track slot counts for all loaded matches
-  useEffect(() => {
-    const unsubscribes = matches.map(match => {
-      const slotsRef = collection(db, 'matches', match.id, 'slots');
-      return onSnapshot(slotsRef, (snapshot) => {
-        const taken = snapshot.docs.filter(doc => 
-          doc.data().status === 'BOOKED' || doc.data().status === 'PENDING'
-        ).length;
-        setSlotsCount(prev => ({ ...prev, [match.id]: 48 - taken }));
-      });
-    });
-
-    return () => unsubscribes.forEach(unsub => unsub());
-  }, [matches]);
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'global_settings', 'status'), (docSnap) => {
@@ -145,6 +131,10 @@ export default function LobbyPage() {
     const unsubscribe = onSnapshot(slotsRef, (snapshot) => {
       const fetchedSlots = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.slotNumber - b.slotNumber);
       setSlots(fetchedSlots);
+      const taken = fetchedSlots.filter(doc => 
+        doc.status === 'BOOKED' || doc.status === 'CONFIRMED' || doc.status === 'PENDING' || doc.status === 'PENDING_VERIFICATION'
+      ).length;
+      setSlotsCount(prev => ({ ...prev, [activeMatchId]: 48 - taken }));
     });
 
     return () => unsubscribe();
