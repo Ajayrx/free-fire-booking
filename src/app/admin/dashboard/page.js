@@ -4,6 +4,18 @@ import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, getDoc, where, writeBatch } from 'firebase/firestore';
 
+// Robust Timezone Helper: Calculate Date in IST (UTC+5:30)
+const getISTDateString = (offsetDays = 0) => {
+  const date = new Date();
+  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+  const istDate = new Date(utc + (330 * 60000));
+  istDate.setDate(istDate.getDate() + offsetDays);
+  const yyyy = istDate.getFullYear();
+  const mm = String(istDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(istDate.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 function PaymentSettingsEditor() {
   const [settings, setSettings] = useState({
     qrCodeUrl: '',
@@ -390,26 +402,34 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const q = query(
-      collection(db, 'matches'), 
-      where('date', '>=', today.getTime())
-    );
+    const q = query(collection(db, 'matches'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       let fetchedMatches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const todayStr = getISTDateString(0);
+      const tomorrowStr = getISTDateString(1);
+      const todayTime = new Date(`${todayStr}T00:00:00+05:30`).getTime();
+      const tomorrowTime = new Date(`${tomorrowStr}T00:00:00+05:30`).getTime();
+
       // Sort locally by date then matchNumber
       fetchedMatches.sort((a, b) => {
-        if (a.date !== b.date) return (a.date || 0) - (b.date || 0);
-        return (a.matchNumber || 0) - (b.matchNumber || 0);
+        const dateA = a.dateStr || (a.date ? new Date(a.date).toISOString().slice(0, 10) : '');
+        const dateB = b.dateStr || (b.date ? new Date(b.date).toISOString().slice(0, 10) : '');
+        if (dateA === dateB) {
+          return (a.matchNumber || 0) - (b.matchNumber || 0);
+        }
+        return dateA.localeCompare(dateB);
       });
       
       setMatches(fetchedMatches);
       
       setActiveMatchId(prev => {
-        if (!prev || !fetchedMatches.find(m => m.id === prev)) {
-          return fetchedMatches.length > 0 ? fetchedMatches[0].id : null;
+        const activePool = fetchedMatches.filter(m => 
+          m.dateStr === todayStr || m.dateStr === tomorrowStr || 
+          m.date === todayTime || m.date === tomorrowTime
+        );
+        if (!prev || !activePool.find(m => m.id === prev)) {
+          return activePool.length > 0 ? activePool[0].id : (fetchedMatches.length > 0 ? fetchedMatches[0].id : null);
         }
         return prev;
       });
@@ -506,38 +526,38 @@ export default function AdminDashboard() {
   const activeBookings = bookings.filter(b => b.matchId === activeMatchId);
   const activeMatchObj = matches.find(m => m.id === activeMatchId);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayTime = today.getTime();
-  
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  const tomorrowTime = tomorrow.getTime();
+  const todayStr = getISTDateString(0);
+  const tomorrowStr = getISTDateString(1);
+  const todayTime = new Date(`${todayStr}T00:00:00+05:30`).getTime();
+  const tomorrowTime = new Date(`${tomorrowStr}T00:00:00+05:30`).getTime();
 
-  const todaysMatches = matches.filter(m => m.date === todayTime);
-  const tomorrowsMatches = matches.filter(m => m.date === tomorrowTime);
-  const otherMatches = matches.filter(m => m.date !== todayTime && m.date !== tomorrowTime);
+  const todaysMatches = matches.filter(m => m.dateStr === todayStr || m.date === todayTime);
+  const tomorrowsMatches = matches.filter(m => m.dateStr === tomorrowStr || m.date === tomorrowTime);
+  const otherMatches = matches.filter(m => !todaysMatches.includes(m) && !tomorrowsMatches.includes(m));
 
   const renderMatchButtons = (matchList) => (
     <div style={{ display: 'flex', gap: '8px' }}>
-      {matchList.map((match) => (
-        <button
-          key={match.id}
-          onClick={() => setActiveMatchId(match.id)}
-          style={{
-            padding: '12px 24px',
-            borderRadius: '8px',
-            fontWeight: 'bold',
-            border: 'none',
-            cursor: 'pointer',
-            background: activeMatchId === match.id ? '#1F2937' : '#E5E7EB',
-            color: activeMatchId === match.id ? 'white' : '#4B5563',
-          }}
-        >
-          Day {match.date ? new Date(match.date).getDate() : '??'} M{match.matchNumber} ({match.status})
-        </button>
-      ))}
+      {matchList.map((match) => {
+        const dStr = match.dateStr || (match.date ? new Date(match.date).toISOString().slice(0, 10) : '????-??-??');
+        const dayNum = dStr.split('-')[2] || '??';
+        return (
+          <button
+            key={match.id}
+            onClick={() => setActiveMatchId(match.id)}
+            style={{
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              border: 'none',
+              cursor: 'pointer',
+              background: activeMatchId === match.id ? '#1F2937' : '#E5E7EB',
+              color: activeMatchId === match.id ? 'white' : '#4B5563',
+            }}
+          >
+            Day {dayNum} M{match.matchNumber} ({match.status})
+          </button>
+        );
+      })}
     </div>
   );
 

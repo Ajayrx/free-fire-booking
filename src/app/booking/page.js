@@ -7,6 +7,18 @@ import BookingSummary from '@/components/BookingSummary';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, doc } from 'firebase/firestore';
 
+// Robust Timezone Helper: Calculate Date in IST (UTC+5:30)
+const getISTDateString = (offsetDays = 0) => {
+  const date = new Date();
+  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+  const istDate = new Date(utc + (330 * 60000));
+  istDate.setDate(istDate.getDate() + offsetDays);
+  const yyyy = istDate.getFullYear();
+  const mm = String(istDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(istDate.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 export default function LobbyPage() {
   const [matches, setMatches] = useState([]);
   const [activeMatch, setActiveMatch] = useState(null);
@@ -57,33 +69,40 @@ export default function LobbyPage() {
 
   // 1. Fetch Matches
   useEffect(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const q = query(
-      collection(db, 'matches'),
-      where('date', '>=', today.getTime())
-    );
+    const q = query(collection(db, 'matches'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       let fetchedMatches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
-      // Sort matches in memory to avoid needing a Firebase composite index
+      const todayStr = getISTDateString(0);
+      const tomorrowStr = getISTDateString(1);
+      const todayTime = new Date(`${todayStr}T00:00:00+05:30`).getTime();
+      const tomorrowTime = new Date(`${tomorrowStr}T00:00:00+05:30`).getTime();
+
+      // Sort matches cleanly: Today before Tomorrow, then matchNumber 1, 2, 3
       fetchedMatches.sort((a, b) => {
-        if (a.date === b.date) {
+        const dateA = a.dateStr || (a.date ? new Date(a.date).toISOString().slice(0, 10) : '');
+        const dateB = b.dateStr || (b.date ? new Date(b.date).toISOString().slice(0, 10) : '');
+        if (dateA === dateB) {
           return (a.matchNumber || 0) - (b.matchNumber || 0);
         }
-        return (a.date || 0) - (b.date || 0);
+        return dateA.localeCompare(dateB);
       });
       
       setMatches(fetchedMatches);
       
       setActiveMatch(prev => {
-        if (!prev && fetchedMatches.length > 0) {
-          return fetchedMatches.find(m => m.status === 'OPEN') || fetchedMatches[0];
+        const activePool = fetchedMatches.filter(m => 
+          m.dateStr === todayStr || m.dateStr === tomorrowStr || 
+          m.date === todayTime || m.date === tomorrowTime
+        );
+
+        if (!prev && activePool.length > 0) {
+          return activePool.find(m => m.status === 'OPEN') || activePool[0];
         }
-        // If the current activeMatch was deleted or changed status, we might need to handle that,
-        // but for now just keep the current one
+        if (prev && !activePool.find(m => m.id === prev.id) && activePool.length > 0) {
+          return activePool.find(m => m.status === 'OPEN') || activePool[0];
+        }
         return prev;
       });
       setLoading(false);
@@ -129,20 +148,10 @@ export default function LobbyPage() {
     return <div style={{ padding: '40px', textAlign: 'center' }}>Loading Lobby...</div>;
   }
 
-  // Robust Timezone Fix: Calculate Date in IST (UTC+5:30)
-  const getISTDateString = (offsetDays = 0) => {
-    const date = new Date();
-    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-    const istDate = new Date(utc + (330 * 60000));
-    istDate.setDate(istDate.getDate() + offsetDays);
-    const yyyy = istDate.getFullYear();
-    const mm = String(istDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(istDate.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
   const todayStr = getISTDateString(0);
   const tomorrowStr = getISTDateString(1);
+  const todayTime = new Date(`${todayStr}T00:00:00+05:30`).getTime();
+  const tomorrowTime = new Date(`${tomorrowStr}T00:00:00+05:30`).getTime();
 
   // Fallback for legacy timestamps generated locally
   const legacyToday = new Date();
@@ -150,8 +159,8 @@ export default function LobbyPage() {
   const legacyTomorrow = new Date(legacyToday);
   legacyTomorrow.setDate(legacyTomorrow.getDate() + 1);
 
-  const todaysMatches = matches.filter(m => m.dateStr === todayStr || m.date === legacyToday.getTime());
-  const tomorrowsMatches = matches.filter(m => m.dateStr === tomorrowStr || m.date === legacyTomorrow.getTime());
+  const todaysMatches = matches.filter(m => m.dateStr === todayStr || m.date === todayTime || m.date === legacyToday.getTime());
+  const tomorrowsMatches = matches.filter(m => m.dateStr === tomorrowStr || m.date === tomorrowTime || m.date === legacyTomorrow.getTime());
 
   const renderMatchButtons = (matchList) => (
     <div style={{ display: 'flex', gap: '8px' }}>

@@ -16,6 +16,7 @@ async function generateMatchesForDate(targetDateStr) {
     await setDoc(matchRef, {
       matchNumber: i,
       dateStr: targetDateStr,
+      date: new Date(`${targetDateStr}T00:00:00+05:30`).getTime(),
       status: i === 1 ? 'OPEN' : 'LOCKED', // Only match 1 is open
       createdAt: Date.now(),
       settings: {
