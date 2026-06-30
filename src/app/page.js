@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import RulesModal from '@/components/RulesModal';
 
 export default function HomePage() {
   return (
