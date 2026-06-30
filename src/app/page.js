@@ -29,18 +29,22 @@ export default function HomePage() {
 
       {/* CHARACTER (ABSOLUTE) */}
       <div className="home-character">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/gc.png" alt="Hero Character" />
+        <picture>
+          <source srcSet="/gc.webp" type="image/webp" />
+          <img src="/gc.png" alt="Hero Character" width={450} height={478} fetchPriority="high" loading="eager" decoding="sync" />
+        </picture>
       </div>
 
       {/* DIAGONAL BANNER - 10vh */}
       <div className="home-banner-container">
         <div className="home-banner">
           <div className="marquee">
-            {Array.from({ length: 20 }).map((_, i) => (
+            {Array.from({ length: 8 }).map((_, i) => (
               <span key={i} className="marquee-item">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/f.png" alt="Free Fire" className="marquee-f-img" />
+                <picture>
+                  <source srcSet="/f.webp" type="image/webp" />
+                  <img src="/f.png" alt="Free Fire" width={400} height={88} loading="lazy" decoding="async" className="marquee-f-img" />
+                </picture>
                 <span className="marquee-heart">❤️</span>
               </span>
             ))}
