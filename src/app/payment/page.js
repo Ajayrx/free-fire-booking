@@ -35,6 +35,7 @@ export default function PaymentPage() {
   const [senderUpiId, setSenderUpiId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receipt, setReceipt] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);
   
   const [paymentSettings, setPaymentSettings] = useState({
     qrCodeUrl: '',
@@ -48,12 +49,16 @@ export default function PaymentPage() {
   useEffect(() => {
     const data = localStorage.getItem('pendingBooking');
     if (data) {
-      setBookingData(JSON.parse(data));
+      const parsed = JSON.parse(data);
+      setBookingData(parsed);
+      if (parsed.hold_until) {
+        const remaining = Math.max(0, Math.floor((parsed.hold_until - Date.now()) / 1000));
+        setTimeLeft(remaining);
+      }
     } else {
       router.push('/');
     }
 
-    // Fetch Global Payment Settings
     const fetchPaymentSettings = async () => {
       try {
         const docRef = doc(db, 'global_settings', 'payment');
@@ -67,6 +72,30 @@ export default function PaymentPage() {
     };
     fetchPaymentSettings();
   }, [router]);
+
+  useEffect(() => {
+    if (timeLeft === null || receipt) return;
+    if (timeLeft <= 0) {
+      if (bookingData?.reservationId && bookingData?.ownerToken) {
+        fetch('/api/bookings/release', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reservationId: bookingData.reservationId,
+            ownerToken: bookingData.ownerToken
+          })
+        }).catch(() => {});
+      }
+      localStorage.removeItem('pendingBooking');
+      alert('Your slot reservation has expired. Please select your slots again.');
+      router.push('/booking');
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev !== null && prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, bookingData, router, receipt]);
 
   const handlePaymentComplete = async () => {
     if (!playerName || !whatsappNumber || !senderUpiId) {
@@ -85,7 +114,9 @@ export default function PaymentPage() {
         whatsappNumber,
         senderUpiId,
         matchId: bookingData.matchId,
-        slots: bookingData.slots
+        slots: bookingData.slots,
+        reservationId: bookingData.reservationId || null,
+        ownerToken: bookingData.ownerToken || null
       };
 
       const res = await fetch('/api/bookings', {
@@ -172,7 +203,14 @@ export default function PaymentPage() {
           </div>
           
           <h1 className="title" style={{ fontSize: '20px', marginBottom: '4px' }}>Complete Your Booking</h1>
-          <p className="subtitle" style={{ marginBottom: '16px', fontSize: '13px' }}>Enter your details and complete the payment to secure your slots.</p>
+          <p className="subtitle" style={{ marginBottom: '12px', fontSize: '13px' }}>Enter your details and complete the payment to secure your slots.</p>
+
+          {timeLeft !== null && (
+            <div style={{ background: '#FEF3C7', border: '1px solid #F59E0B', color: '#92400E', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', fontWeight: '600' }}>
+              <span>⏳ Slot Reserved For:</span>
+              <span style={{ fontSize: '15px', color: '#B45309' }}>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+            </div>
+          )}
 
           <div style={{ marginBottom: '16px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Player Name *</label>

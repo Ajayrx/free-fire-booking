@@ -25,8 +25,28 @@ export default function LobbyPage() {
   const [slots, setSlots] = useState([]);
   const [slotsCount, setSlotsCount] = useState({});
   const [selectedSlots, setSelectedSlots] = useState([]);
+  const [activeReservation, setActiveReservation] = useState(null);
+  const [pendingSlotIds, setPendingSlotIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSuspended, setIsSuspended] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (activeReservation) {
+        fetch('/api/bookings/release', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reservationId: activeReservation.reservationId,
+            ownerToken: activeReservation.ownerToken
+          })
+        }).catch(() => {});
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [activeReservation]);
 
   // Network diagnostic timeout
   useEffect(() => {
@@ -130,17 +150,70 @@ export default function LobbyPage() {
     return () => unsubscribe();
   }, [activeMatchId]);
 
-  const handleSlotClick = (slot) => {
-    if (slot.status !== 'AVAILABLE' && slot.status !== 'OPEN') return;
-    
-    if (selectedSlots.find(s => s.id === slot.id)) {
-      setSelectedSlots(selectedSlots.filter(s => s.id !== slot.id));
-    } else {
-      if (selectedSlots.length < 29) {
-        setSelectedSlots([...selectedSlots, slot]);
-      } else {
-        alert('You can select a maximum of 29 slots.');
+  const handleSlotClick = async (slot) => {
+    if (pendingSlotIds.includes(slot.id)) return;
+
+    const isSelected = selectedSlots.some(s => s.id === slot.id);
+    if (isSelected) {
+      setPendingSlotIds(prev => [...prev, slot.id]);
+      setSelectedSlots(prev => prev.filter(s => s.id !== slot.id));
+      try {
+        await fetch('/api/bookings/release', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reservationId: activeReservation?.reservationId,
+            ownerToken: activeReservation?.ownerToken,
+            matchId: activeMatch?.id,
+            slotIds: [slot.id]
+          })
+        });
+      } catch (err) {
+        console.error('Release failed', err);
+      } finally {
+        setPendingSlotIds(prev => prev.filter(id => id !== slot.id));
       }
+      return;
+    }
+
+    const isAvailable = slot.status === 'AVAILABLE' || slot.status === 'OPEN';
+    const isStaleHold = slot.status === 'HELD' && slot.hold_until < Date.now();
+    if (!isAvailable && !isStaleHold) return;
+
+    if (selectedSlots.length >= 29) {
+      alert('You can select a maximum of 29 slots.');
+      return;
+    }
+
+    setPendingSlotIds(prev => [...prev, slot.id]);
+    try {
+      const res = await fetch('/api/bookings/reserve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          matchId: activeMatch.id,
+          slot,
+          existingReservationId: activeReservation?.reservationId,
+          ownerToken: activeReservation?.ownerToken
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setActiveReservation({
+          reservationId: data.reservationId,
+          ownerToken: data.ownerToken,
+          hold_until: data.hold_until
+        });
+        setSelectedSlots(prev => [...prev, slot]);
+      } else {
+        alert(data.error || 'This slot was just reserved by someone else.');
+      }
+    } catch (err) {
+      console.error('Reserve error:', err);
+      alert('Unable to reserve slot. Please try again.');
+    } finally {
+      setPendingSlotIds(prev => prev.filter(id => id !== slot.id));
     }
   };
 
@@ -322,11 +395,11 @@ export default function LobbyPage() {
         </div>
 
         <div style={{ flex: 1, minHeight: 0 }}>
-          <SlotGrid slots={slots} selectedSlots={selectedSlots} onToggle={handleSlotClick} activeMatch={activeMatch} />
+          <SlotGrid slots={slots} selectedSlots={selectedSlots} onToggle={handleSlotClick} activeMatch={activeMatch} pendingSlotIds={pendingSlotIds} activeReservation={activeReservation} />
         </div>
 
         {selectedSlots.length > 0 && (
-          <BookingSummary selectedSlots={selectedSlots} setSelectedSlots={setSelectedSlots} activeMatch={activeMatch} />
+          <BookingSummary selectedSlots={selectedSlots} setSelectedSlots={setSelectedSlots} activeMatch={activeMatch} activeReservation={activeReservation} />
         )}
       </div>
     </div>

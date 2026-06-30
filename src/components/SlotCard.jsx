@@ -1,7 +1,10 @@
-export default function SlotCard({ slot, isSelected, onToggle }) {
-  const isAvailable = slot.status === 'AVAILABLE' || slot.status === 'OPEN';
-  const isPending = slot.status === 'PENDING';
-  const isBooked = slot.status === 'BOOKED';
+export default function SlotCard({ slot, isSelected, onToggle, pendingSlotIds, activeReservation }) {
+  const isStaleHold = slot.status === 'HELD' && (!slot.hold_until || slot.hold_until < Date.now());
+  const isHeldByOther = slot.status === 'HELD' && slot.hold_until >= Date.now() && (!activeReservation || slot.reservationId !== activeReservation.reservationId);
+  const isAvailable = slot.status === 'AVAILABLE' || slot.status === 'OPEN' || isStaleHold;
+  const isPending = slot.status === 'PENDING' || slot.status === 'PENDING_VERIFICATION';
+  const isBooked = slot.status === 'BOOKED' || slot.status === 'CONFIRMED';
+  const isPendingClick = pendingSlotIds?.includes(slot.id);
 
   let borderColor = 'var(--green-border)';
   let bgColor = 'var(--green-bg)';
@@ -12,12 +15,17 @@ export default function SlotCard({ slot, isSelected, onToggle }) {
     borderColor = 'var(--red-border)';
     bgColor = 'var(--red-bg)';
     textColor = 'var(--red-text)';
-    statusText = `Booked- ${slot.freeFireUid}`;
+    statusText = `Booked- ${slot.freeFireUid || 'Player'}`;
   } else if (isPending) {
     borderColor = '#F59E0B'; // Orange
     bgColor = '#FEF3C7';
     textColor = '#B45309';
     statusText = 'PENDING';
+  } else if (isHeldByOther) {
+    borderColor = '#D97706'; // Amber
+    bgColor = '#FEF3C7';
+    textColor = '#92400E';
+    statusText = 'HELD';
   } else if (isSelected) {
     borderColor = 'var(--gold-primary)';
     bgColor = 'var(--gold-light)';
@@ -25,8 +33,14 @@ export default function SlotCard({ slot, isSelected, onToggle }) {
     statusText = 'SELECTED';
   }
 
+  if (isPendingClick) {
+    statusText = 'RESERVING...';
+  }
+
+  const canClick = (isAvailable || isSelected) && !isPendingClick && !isHeldByOther && !isBooked && !isPending;
+
   const handleClick = () => {
-    if (isAvailable) {
+    if (canClick) {
       onToggle(slot);
     }
   };
@@ -39,12 +53,12 @@ export default function SlotCard({ slot, isSelected, onToggle }) {
         backgroundColor: bgColor,
         color: textColor,
         borderRadius: '4px',
-        cursor: isAvailable ? 'pointer' : 'not-allowed',
+        cursor: canClick ? 'pointer' : 'not-allowed',
         display: 'flex',
         alignItems: 'stretch',
         height: '32px',
         transition: 'all 0.2s',
-        opacity: isAvailable || isSelected ? 1 : 0.8,
+        opacity: canClick ? 1 : 0.75,
         overflow: 'hidden'
       }}
     >

@@ -1,6 +1,6 @@
 import SlotCard from './SlotCard';
 
-export default function SlotGrid({ slots, selectedSlots, onToggle, activeMatch }) {
+export default function SlotGrid({ slots, selectedSlots, onToggle, activeMatch, pendingSlotIds, activeReservation }) {
   if (!slots || slots.length === 0) {
     return (
       <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
@@ -9,7 +9,7 @@ export default function SlotGrid({ slots, selectedSlots, onToggle, activeMatch }
     );
   }
 
-  const joinedCount = slots.filter(s => s.status === 'BOOKED' || s.status === 'PENDING').length;
+  const joinedCount = slots.filter(s => s.status === 'BOOKED' || s.status === 'CONFIRMED' || s.status === 'PENDING' || s.status === 'PENDING_VERIFICATION').length;
   
   const roomId = activeMatch?.roomId || '';
   const roomPass = activeMatch?.roomPass || '';
@@ -43,6 +43,10 @@ export default function SlotGrid({ slots, selectedSlots, onToggle, activeMatch }
           AVAILABLE
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#D97706' }}></div>
+          HELD
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--red-border)' }}></div>
           BOOKED
         </div>
@@ -63,6 +67,8 @@ export default function SlotGrid({ slots, selectedSlots, onToggle, activeMatch }
             slot={slot} 
             isSelected={selectedSlots.some(s => s.id === slot.id)} 
             onToggle={onToggle}
+            pendingSlotIds={pendingSlotIds}
+            activeReservation={activeReservation}
           />
         ))}
       </div>

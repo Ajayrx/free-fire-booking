@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function BookingSummary({ selectedSlots, setSelectedSlots, activeMatch }) {
+export default function BookingSummary({ selectedSlots, setSelectedSlots, activeMatch, activeReservation }) {
   const router = useRouter();
   const [uids, setUids] = useState({});
 
@@ -14,7 +14,6 @@ export default function BookingSummary({ selectedSlots, setSelectedSlots, active
   };
 
   const handleProceed = () => {
-    // Check if all selected slots have a UID
     for (const slot of selectedSlots) {
       if (!uids[slot.id] || uids[slot.id].trim() === '') {
         alert(`Please enter Free Fire UID for Slot ${slot.slotNumber}`);
@@ -22,10 +21,12 @@ export default function BookingSummary({ selectedSlots, setSelectedSlots, active
       }
     }
 
-    // Save to localStorage or context so payment page can read it
     const bookingData = {
       matchId: activeMatch.id,
       matchNumber: activeMatch.matchNumber,
+      reservationId: activeReservation?.reservationId || null,
+      ownerToken: activeReservation?.ownerToken || null,
+      hold_until: activeReservation?.hold_until || null,
       slots: selectedSlots.map(s => ({ id: s.id, slotNumber: s.slotNumber, freeFireUid: uids[s.id] })),
       totalFee
     };

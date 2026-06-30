@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, getDoc, where, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, getDoc, where, writeBatch, serverTimestamp } from 'firebase/firestore';
 
 // Robust Timezone Helper: Calculate Date in IST (UTC+5:30)
 const getISTDateString = (offsetDays = 0) => {
@@ -471,6 +471,14 @@ export default function AdminDashboard() {
       
       if (booking.slots && booking.matchId) {
         const batch = writeBatch(db);
+        if (booking.reservationId) {
+          const resRef = doc(db, 'reservations', booking.reservationId);
+          if (newStatus === 'APPROVED') {
+            batch.update(resRef, { status: 'COMPLETED', approvedAt: serverTimestamp() });
+          } else if (newStatus === 'REJECTED') {
+            batch.update(resRef, { status: 'REJECTED', rejectedAt: serverTimestamp() });
+          }
+        }
         for (const slot of booking.slots) {
           const slotRef = doc(db, 'matches', booking.matchId, 'slots', slot.slotId.toString());
           if (newStatus === 'APPROVED') {
@@ -481,7 +489,9 @@ export default function AdminDashboard() {
               bookingId: null, 
               freeFireUid: null, 
               playerName: null, 
-              whatsappNumber: null 
+              whatsappNumber: null,
+              reservationId: null,
+              hold_until: null
             });
           }
         }
