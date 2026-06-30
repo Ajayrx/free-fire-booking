@@ -536,9 +536,11 @@ body {
   pointer-events: none;
 }
 
+.home-character picture,
 .home-character img {
   height: 100%;
   width: auto;
+  aspect-ratio: 450 / 478;
   max-width: none;
   object-fit: contain;
   object-position: bottom right;
@@ -585,6 +587,7 @@ body {
 .marquee-f-img {
   height: 90px;
   width: auto;
+  aspect-ratio: 400 / 88;
 }
 
 .marquee-heart {
@@ -693,6 +696,8 @@ body {
   }
   .marquee-f-img {
     height: 60px;
+    width: auto;
+    aspect-ratio: 400 / 88;
   }
   .marquee-heart {
     font-size: 2rem;

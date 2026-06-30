@@ -101,8 +101,8 @@ export default function TournamentInfo({ activeMatch, joinedCount = 0 }) {
       <div className="card" style={{ padding: '0', overflow: 'hidden', marginBottom: '16px' }}>
         <div style={{ position: 'relative', height: '140px', background: '#ccc' }}>
           <picture style={{ width: '100%', height: '100%' }}>
-            <source srcSet="/bermuda.webp" type="image/webp" />
-            <img src="/bermuda.png" alt="Bermuda Classic" width={480} height={140} fetchPriority="high" loading="eager" decoding="sync" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <source srcSet="/bermuda.webp" type="image/webp" width="480" height="140" />
+            <img src="/bermuda.png" alt="Bermuda Classic" width={480} height={140} fetchPriority="high" loading="eager" decoding="sync" style={{ width: '100%', height: '100%', objectFit: 'cover', aspectRatio: '480 / 140' }} />
           </picture>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }}>
             <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '800' }}>MAP: BERMUDA CLASSIC</h3>

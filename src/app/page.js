@@ -29,8 +29,8 @@ export default function HomePage() {
       {/* CHARACTER (ABSOLUTE) */}
       <div className="home-character">
         <picture>
-          <source srcSet="/gc.webp" type="image/webp" />
-          <img src="/gc.png" alt="Hero Character" width={450} height={478} fetchPriority="high" loading="eager" decoding="sync" />
+          <source srcSet="/gc.webp" type="image/webp" width="450" height="478" />
+          <img src="/gc.png" alt="Hero Character" width={450} height={478} fetchPriority="high" loading="eager" decoding="sync" style={{ aspectRatio: '450 / 478', width: 'auto', height: '100%' }} />
         </picture>
       </div>
 
@@ -41,8 +41,8 @@ export default function HomePage() {
             {Array.from({ length: 8 }).map((_, i) => (
               <span key={i} className="marquee-item">
                 <picture>
-                  <source srcSet="/f.webp" type="image/webp" />
-                  <img src="/f.png" alt="Free Fire" width={400} height={88} loading="lazy" decoding="async" className="marquee-f-img" />
+                  <source srcSet="/f.webp" type="image/webp" width="400" height="88" />
+                  <img src="/f.png" alt="Free Fire" width={400} height={88} loading="lazy" decoding="async" className="marquee-f-img" style={{ aspectRatio: '400 / 88', width: 'auto', height: '90px' }} />
                 </picture>
                 <span className="marquee-heart">❤️</span>
               </span>
